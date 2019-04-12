@@ -103,7 +103,10 @@ echo "${CHR} ${START} ${STOP}" > ${OUTPUT}_snvs.bed
 bam-readcount -l ${OUTPUT}_snvs.bed -f ${REF} ${INPUT} 2>/dev/null 1>${OUTPUT}_bam-readcounts.txt
 
 #Calculate per-base readcount
-cat UHR_bam-readcounts.txt | perl -ne '@data=split("\t", $_); @Adata=split(":", 	$data[5]); @Cdata=split(":", $data[6]); @Gdata=split(":", $data[7]); @Tdata=split(":", 	$data[8]); print "UHR Counts\t$data[0]\t$data[1]\tA: $Adata[1]\tC: $Cdata[1]\tT: 	$Tdata[1]\tG: $Gdata[1]\n";' > ${OUTPUT}_per-base-readcount.txt
+cat UHR_bam-readcounts.txt | perl -ne '@data=split("\t", $_); @Adata=split(":", $data[5]); @Cdata=split(":", $data[6]); @Gdata=split(":", $data[7]); @Tdata=split(":", $data[8]); print "UHR Counts\t$data[0]\t$data[1]\tA: $Adata[1]\tC: $Cdata[1]\tT: $Tdata[1]\tG: $Gdata[1]\n";' > ${OUTPUT}_per-base-readcount.txt
+
+#Show per-base results
+cat ${OUTPUT}_per-base-readcount.txt
 
 
 
