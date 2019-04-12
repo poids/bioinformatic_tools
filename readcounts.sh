@@ -50,6 +50,25 @@ while (( "$#" )); do # while loop starts
             echo "Output: ${OUTPUT}"
             shift 2
             ;;
+        -h|--help)
+            echo 'Usage: [PARAMS]... [BAM FILE]'
+            echo 'Description: Tool for analyzing readcount/pileup over a genomic region of interest and producing per-base readcount'
+            echo ''
+            echo '  readcounts.sh -ref <ref-genome.fa> {-pos | [-chr -start -stop]} -i <input.bam>'
+            echo ''
+            echo '  Input:'
+            echo '      -ref            Path/to/reference/genome (.fasta or .fa)'
+            echo '      -pos            Genomic coordinates <chr:start-stop> (e.g., 22:15867-15997)'
+            echo '      -chr            Chromsome (e.g., 22)'
+            echo '      -start          Starting Genomic Coordinate'
+            echo '      -stop           Ending Genomic Coordinate'
+            echo '      -i              Path/to/BAMfile (.bam)'
+            echo ''
+            echo '**Note user can either provide genomic coordinate using or -pos flag with standard coordinate format or by providing each -chr, -start, and -stop argument individually'
+            echo ''
+            echo 'Written and Maintained by Vasco Morais (April 2019)'
+            exit 1
+            ;;
         --) # end argument parsing
             shift
             break
