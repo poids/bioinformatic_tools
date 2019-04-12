@@ -25,7 +25,7 @@ while (( "$#" )); do # while loop starts
             echo '      -chr            Chromsome (e.g., 22)'
             echo '      -start          Starting Genomic Coordinate'
             echo '      -stop           Ending Genomic Coordinate'
-            echo '      -i              Path/to/BAMfiles (.bam)'
+            echo '      -i              Path/to/BAMfiles (.bam) - enter one or multiple files'
             echo ''
             echo '**Note user can either provide genomic coordinate using or -pos flag'
             echo '  with standard coordinate format or by providing each -chr, -start,'
@@ -109,8 +109,6 @@ for i in $INPUT; do
 
     samtools index ${i} ${i}.bai
 
-    #find .bam -exec echo samtools index {} \; | sh
-
     ### Build Reference Genome Index ###
     echo '---'
     echo 'BUILD REF GENOME INDEX'
@@ -124,8 +122,6 @@ for i in $INPUT; do
     echo '---'
 
     samtools mpileup -f $RNA_REF_FASTA -r ${CHR}:${START}-${STOP} ${i}
-
-    #DOES IT REQUIRE MORE THAN ONE BAM FILE???
 
     ### Perform BAM read count on ROI ###
     echo '---'
