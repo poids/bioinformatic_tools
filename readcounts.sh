@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #DESCRIPTION:
-#Tool for analyzing readcount/pileup over a genomic region of interest
+#Tool for analyzing readcount/pileup over a genomic region of interest and producing per-base readcount
 
 #REQUIREMENTS:
 #samtools
@@ -43,6 +43,13 @@ while (( "$#" )); do # while loop starts
             echo "Stop: ${STOP}"
             shift 2
             ;;
+        -i)
+            INPUT="$2"
+            OUTPUT=$(echo ${INPUT} | perl -ne '@path=split("/", $_); @output=split(".bam", $path[-1]); printf "$output[0]\n";')
+            echo "Input: ${INPUT}"
+            echo "Output: ${OUTPUT}"
+            shift 2
+            ;;
         --) # end argument parsing
             shift
             break
@@ -52,7 +59,7 @@ while (( "$#" )); do # while loop starts
             exit 1
             ;;
         *) # preserve positional arguments
-            READS="$1"
+            #READS="$1"
             echo "Option $1 not recognized"
             shift
             ;;
@@ -60,24 +67,47 @@ while (( "$#" )); do # while loop starts
     # shift
 done
 
+### Index Bam ###
+echo '---'
+echo 'INDEX BAM FILE'
+echo '---'
 
-find .bam -exec echo samtools index {} \; | sh
+samtools index ${INPUT} ${INPUT}.bai
+
+#find .bam -exec echo samtools index {} \; | sh
+
+### Build Reference Genome Index ###
+echo '---'
+echo 'BUILD REF GENOME INDEX'
+echo '---'
 
 samtools faidx ${REF}
 
+### Count Pile-Up on ROI ###
+echo '---'
+echo 'COUNT PILE-UP ON REGION OF INTEREST'
+echo '---'
 
-# samtools mpileup -f $RNA_REF_FASTA -r 22:18918457-18918467 $RNA_ALIGN_DIR/UHR.bam $RNA_ALIGN_DIR/HBR.bam
+samtools mpileup -f $RNA_REF_FASTA -r ${CHR}:${START}-${STOP} ${INPUT}
+
+#DOES IT REQUIRE MORE THAN ONE BAM FILE???
+
+### Perform BAM read count on ROI ###
+echo '---'
+echo 'PERFORM BAM READCOUNT ON REGION OF INTEREST'
+echo '---'
+
+#Create bedfile with genomic coordinates in header
+echo "${CHR} ${START} ${STOP}" > ${OUTPUT}_snvs.bed
+#Run bam-readcout
+bam-readcount -l ${OUTPUT}_snvs.bed -f ${REF} ${INPUT} 2>/dev/null 1>${OUTPUT}_bam-readcounts.txt
+
+#Calculate per-base readcount
+cat UHR_bam-readcounts.txt | perl -ne '@data=split("\t", $_); @Adata=split(":", 	$data[5]); @Cdata=split(":", $data[6]); @Gdata=split(":", $data[7]); @Tdata=split(":", 	$data[8]); print "UHR Counts\t$data[0]\t$data[1]\tA: $Adata[1]\tC: $Cdata[1]\tT: 	$Tdata[1]\tG: $Gdata[1]\n";' > ${OUTPUT}_per-base-readcount.txt
 
 
-OUTPUT=perl -ne '@path=split("/", $_); @output=split(".bam", $path[-1]); printf "$output[0]\n";'
 
-        -pos)
-            POS="$2"
-            CHR=$(echo ${POS} | perl -ne '@chr=split(":", $_); printf "$chr[0]";')
-            START=$(echo ${POS} | perl -ne '@pos=split(":", $_); @start=split("-", $pos[1]); printf "$start[0]";')
-            STOP=$(echo ${POS} | perl -ne '@pos=split(":", $_); @stop=split("-", $pos[1]); printf "$stop[0]";')
-            echo "Chromosome: ${CHR}"
-            echo "Start: ${START}"
-            echo "Stop: ${STOP}"
-            shift 2
-            ;;
+#Remove temporary files?
+rm ${INPUT}.bai
+rm ${REF}.fai
+rm ${OUTPUT}_snvs.bed
