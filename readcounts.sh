@@ -11,36 +11,48 @@
 
 #Written and Maintained by Vasco Morais (April 2019)
 
-while [ -n "$1" ]; do # while loop starts
+while (( "$#" )); do # while loop starts
     case "$1" in
-    -ref)
-        REF="$1"
-        echo "Reference Genome: ${REF}"
-        shift
-        ;;
-    -chr)
-        CHR="$2"
-        echo "Chromosome: ${REF}"
-        shift
-        ;;
-    -start)
-        START="$3"
-        echo "Start: ${START}"
-        shift
-        ;;
-    -stop)
-        STOP="$4"
-        echo "Stop: ${STOP}"
-        shift
-        ;;
-    *) echo "Option $1 not recognized"
+        -ref)
+            REF="$2"
+            echo "Reference Genome: ${REF}"
+            shift 2
+            ;;
+        -chr)
+            CHR="$2"
+            echo "Chromosome: ${CHR}"
+            shift 2
+            ;;
+        -start)
+            START="$2"
+            echo "Start: ${START}"
+            shift 2
+            ;;
+        -stop)
+            STOP="$2"
+            echo "Stop: ${STOP}"
+            shift 2
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "Error: Unsupported flag $1" >&2
+            exit 1
+            ;;
+        *) # preserve positional arguments
+            READS="$1"
+            echo "Option $1 not recognized"
+            shift
+            ;;
     esac
-    shift
+    # shift
 done
 
 
 # find *.bam -exec echo samtools index {} \; | sh
-echo test
+
 # samtools faidx $RNA_REF_FASTA
 
 
