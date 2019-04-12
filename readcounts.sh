@@ -69,11 +69,12 @@ while (( "$#" )); do # while loop starts
             echo '      -stop           Ending Genomic Coordinate'
             echo '      -i              Path/to/BAMfile (.bam)'
             echo ''
-            echo '**Note user can either provide genomic coordinate using or -pos flag with standard coordinate format or by providing each -chr, -start, and -stop argument individually'
+            echo '**Note user can either provide genomic coordinate using or -pos flag'
+            echo '  with standard coordinate format or by providing each -chr, -start,'
+            echo '  and -stop argument individually'
             echo ''
             echo '  Options:'
-            echo '      -r              Removes temporary files generated during program.'
-            echo '                          These include bam-index (.bai), fasta-index (.fai), and a bedfile used to store temporary data'
+            echo '      -r              Removes fasta (.fai) and bam (.bai) indexes generated during script'
             echo '      -h, --help      Display help'
             echo ''
             echo 'Written and Maintained by Vasco Morais (April 2019)'
@@ -136,11 +137,11 @@ cat UHR_bam-readcounts.txt | perl -ne '@data=split("\t", $_); @Adata=split(":", 
 #Show per-base results
 cat ${OUTPUT}_per-base-readcount.txt
 
-
-
-#Remove temporary files?
+#Remove indexes?
 if [ "$RM" = true ] ; then
     rm ${INPUT}.bai
     rm ${REF}.fai
-    rm ${OUTPUT}_snvs.bed
 fi
+
+#Remove bedfile
+rm ${OUTPUT}_snvs.bed
