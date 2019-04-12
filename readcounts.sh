@@ -18,6 +18,16 @@ while (( "$#" )); do # while loop starts
             echo "Reference Genome: ${REF}"
             shift 2
             ;;
+        -pos)
+            POS="$2"
+            CHR=$(echo ${POS} | perl -ne '@chr=split(":", $_); printf "$chr[0]";')
+            START=$(echo ${POS} | perl -ne '@pos=split(":", $_); @start=split("-", $pos[1]); printf "$start[0]";')
+            STOP=$(echo ${POS} | perl -ne '@pos=split(":", $_); @stop=split("-", $pos[1]); printf "$stop[0]";')
+            echo "Chromosome: ${CHR}"
+            echo "Start: ${START}"
+            echo "Stop: ${STOP}"
+            shift 2
+            ;;
         -chr)
             CHR="$2"
             echo "Chromosome: ${CHR}"
@@ -33,8 +43,6 @@ while (( "$#" )); do # while loop starts
             echo "Stop: ${STOP}"
             shift 2
             ;;
-        -read)
-
         --) # end argument parsing
             shift
             break
@@ -60,4 +68,16 @@ samtools faidx ${REF}
 
 # samtools mpileup -f $RNA_REF_FASTA -r 22:18918457-18918467 $RNA_ALIGN_DIR/UHR.bam $RNA_ALIGN_DIR/HBR.bam
 
-perl -ne '@path=split("/", $_); @output=split(".bam", $path[-1]); printf "$output[0]\n";'
+
+OUTPUT=perl -ne '@path=split("/", $_); @output=split(".bam", $path[-1]); printf "$output[0]\n";'
+
+        -pos)
+            POS="$2"
+            CHR=$(echo ${POS} | perl -ne '@chr=split(":", $_); printf "$chr[0]";')
+            START=$(echo ${POS} | perl -ne '@pos=split(":", $_); @start=split("-", $pos[1]); printf "$start[0]";')
+            STOP=$(echo ${POS} | perl -ne '@pos=split(":", $_); @stop=split("-", $pos[1]); printf "$stop[0]";')
+            echo "Chromosome: ${CHR}"
+            echo "Start: ${START}"
+            echo "Stop: ${STOP}"
+            shift 2
+            ;;
