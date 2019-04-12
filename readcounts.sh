@@ -33,6 +33,8 @@ while (( "$#" )); do # while loop starts
             echo "Stop: ${STOP}"
             shift 2
             ;;
+        -read)
+
         --) # end argument parsing
             shift
             break
@@ -51,9 +53,11 @@ while (( "$#" )); do # while loop starts
 done
 
 
-# find *.bam -exec echo samtools index {} \; | sh
+find .bam -exec echo samtools index {} \; | sh
 
-# samtools faidx $RNA_REF_FASTA
+samtools faidx ${REF}
 
 
 # samtools mpileup -f $RNA_REF_FASTA -r 22:18918457-18918467 $RNA_ALIGN_DIR/UHR.bam $RNA_ALIGN_DIR/HBR.bam
+
+perl -ne '@path=split("/", $_); @output=split(".bam", $path[-1]); printf "$output[0]\n";'
