@@ -13,6 +13,11 @@
 
 while (( "$#" )); do # while loop starts
     case "$1" in
+        -r) #Removes termporary files if included
+            RM=true
+            echo "Will remove temporary files"
+            shift 1
+            ;;
         -ref)
             REF="$2"
             echo "Reference Genome: ${REF}"
@@ -51,10 +56,10 @@ while (( "$#" )); do # while loop starts
             shift 2
             ;;
         -h|--help)
-            echo 'Usage: [PARAMS]... [BAM FILE]'
+            echo 'Usage: [OPTIONS] [PARAMS]... [BAM FILE]'
             echo 'Description: Tool for analyzing readcount/pileup over a genomic region of interest and producing per-base readcount'
             echo ''
-            echo '  readcounts.sh -ref <ref-genome.fa> {-pos | [-chr -start -stop]} -i <input.bam>'
+            echo '  readcounts.sh [options]* -ref <ref-genome.fa> {-pos | [-chr -start -stop]} -i <input.bam>'
             echo ''
             echo '  Input:'
             echo '      -ref            Path/to/reference/genome (.fasta or .fa)'
@@ -65,6 +70,11 @@ while (( "$#" )); do # while loop starts
             echo '      -i              Path/to/BAMfile (.bam)'
             echo ''
             echo '**Note user can either provide genomic coordinate using or -pos flag with standard coordinate format or by providing each -chr, -start, and -stop argument individually'
+            echo ''
+            echo '  Options:'
+            echo '      -r              Removes temporary files generated during program.'
+            echo '                          These include bam-index (.bai), fasta-index (.fai), and a bedfile used to store temporary data'
+            echo '      -h, --help      Display help'
             echo ''
             echo 'Written and Maintained by Vasco Morais (April 2019)'
             exit 1
@@ -83,7 +93,6 @@ while (( "$#" )); do # while loop starts
             shift
             ;;
     esac
-    # shift
 done
 
 ### Index Bam ###
@@ -130,6 +139,8 @@ cat ${OUTPUT}_per-base-readcount.txt
 
 
 #Remove temporary files?
-rm ${INPUT}.bai
-rm ${REF}.fai
-rm ${OUTPUT}_snvs.bed
+if [ "$RM" = true ] ; then
+    rm ${INPUT}.bai
+    rm ${REF}.fai
+    rm ${OUTPUT}_snvs.bed
+fi
