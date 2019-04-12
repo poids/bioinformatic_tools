@@ -40,7 +40,7 @@ done
 
 
 # find *.bam -exec echo samtools index {} \; | sh
-
+echo test
 # samtools faidx $RNA_REF_FASTA
 
 
